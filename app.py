@@ -8,21 +8,15 @@ from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
 )
-import torch
-import os
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel
 
+# model_dir = "my-bert-model"
 base_path = './my-bert-model'
 # download repo to the base_path directory using git
-os.system('apt install git')
-os.system('apt install git-lfs')
 os.system(f'git clone https://code.openxlab.org.cn/summerbird/my-bert-model.git {base_path}')
 os.system(f'cd {base_path} && git lfs pull')
-
-#load transformers model
-tokenizer = AutoTokenizer.from_pretrained(base_path,trust_remote_code=True)
-# please replace "AutoModelForCausalLM" with your real task
-model = AutoModelForCausalLM.from_pretrained(base_path,trust_remote_code=True, torch_dtype=torch.float16).cuda()
+config = AutoConfig.from_pretrained(base_path, num_labels=3, finetuning_task="text-classification")
+tokenizer = AutoTokenizer.from_pretrained(base_path)
+model = AutoModelForSequenceClassification.from_pretrained(base_path, config=config)
 
 def inference(input_text):
     inputs = tokenizer.batch_encode_plus(
