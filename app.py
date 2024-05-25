@@ -2,17 +2,23 @@ import string
 import gradio as gr
 import requests
 import torch
+import os
 from transformers import (
     AutoConfig,
     AutoModelForSequenceClassification,
     AutoTokenizer,
 )
 
-model_dir = "my-bert-model"
-
-config = AutoConfig.from_pretrained(model_dir, num_labels=3, finetuning_task="text-classification")
-tokenizer = AutoTokenizer.from_pretrained(model_dir)
-model = AutoModelForSequenceClassification.from_pretrained(model_dir, config=config)
+# model_dir = "my-bert-model"
+base_path = './my-bert-model'
+# download repo to the base_path directory using git
+os.system('apt install git')
+os.system('apt install git-lfs')
+os.system(f'git clone https://code.openxlab.org.cn/summerbird/my-bert-model.git {base_path}')
+os.system(f'cd {base_path} && git lfs pull')
+config = AutoConfig.from_pretrained(base_path, num_labels=3, finetuning_task="text-classification")
+tokenizer = AutoTokenizer.from_pretrained(base_path)
+model = AutoModelForSequenceClassification.from_pretrained(base_path, config=config)
 
 def inference(input_text):
     inputs = tokenizer.batch_encode_plus(
